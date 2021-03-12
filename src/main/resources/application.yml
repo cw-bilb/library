@@ -1,0 +1,23 @@
+spring:
+  devtools:
+    restart:
+      enabled: true
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/library_manager_system?useUnicode=true&serverTimezone=UTC&characterEncoding=utf-8&useSSL=false
+    username: charles
+    password: 123aaa
+  thymeleaf:
+    cache: true
+  web:
+    resources:
+      chain:
+        cache: false
+server:
+  port: 80
+mybatis:
+  type-aliases-package: com.han.dao
+  mapper-locations: classpath:mapper/*.xml
+logging:
+  level:
+    com.han.mapper: debug

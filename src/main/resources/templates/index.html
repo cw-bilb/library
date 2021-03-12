@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <base th:href="@{http://127.0.0.1/}">
+    <meta charset="UTF-8">
+    <title>欢迎</title>
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1" name="viewport">
+    <link rel="stylesheet" th:href="@{/layui/css/layui.css}">
+    <link rel="stylesheet" th:href="@{/css/custom.css}">
+</head>
+<body>
+<div id="wrapper">
+    <div class="layui-container" id="login_form">
+        <div>
+            <h1 style="color: red">图书管理系统</h1>
+            <br>
+            <h2>用户登录</h2>
+            <br>
+        </div>
+        <form action="/userLogin" class="layui-form" id="my_form" method="post">
+            <div class="layui-form-item">
+                <label class="layui-form-label">用户名:</label>
+                <div class="layui-input-block">
+                    <input autocomplete="off" autofocus class="layui-input" id="username"
+                           name="userName" placeholder="请输入用户名" type="text">
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">密 码:</label>
+                <div class="layui-input-block">
+                    <input autocomplete="off" class="layui-input" id="password"
+                           name="password" placeholder="请输入密码" type="password">
+                </div>
+            </div>
+
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">用户身份</label>
+                <div class="layui-input-block">
+                    <input checked class="form-check-input" name="role" title="学生" type="radio" value="1">
+                    <input class="form-check-input" name="role" title="管理员" type="radio" value="0">
+                </div>
+            </div>
+
+            <div class="layui-form-item layui-col-md4 layui-col-md-offset4">
+                <button class="layui-btn layui-btn-normal" id="sub_btn">登录</button>
+            </div>
+
+        </form>
+
+    </div>
+</div>
+
+
+<script th:src="@{/scripts/jquery.min.js}"></script>
+<script th:src="@{/layui/layui.js}"></script>
+<!--<script th:src="@{/layui/layui.all.js}"></script>-->
+
+<script th:inline="javascript">
+
+    // 非模块化加载,不用执行layui.use()来加载对应模块直接使用即可
+    layui.use(['layer', 'form'], function () {
+        let layer = layui.layer;
+        let form = layui.form;
+        //更新全部表单数据，form.render("type");type 可取 select ,radio..
+        form.render();
+
+        //判断该用户存不存在
+        $(function () {
+            let flag = [[${session.flag}]];
+            if (flag) {
+                layer.msg("用户名或密码错误", {
+                    icon: 2,
+                    time: 2000 //2秒关闭（如果不配置，默认是3秒）
+                });
+            }
+        });
+    });
+
+    $("#sub_btn").click(function () {
+        let username = $("#username").val();
+        // 首先判断用户名是否为空
+        let user_judge = check(username);
+
+        // 用户名不为空  , 判断密码是否为空
+        if (user_judge) {
+            let password = $("#password").val();
+            let pwd_judge = check(password);
+
+
+            if (pwd_judge) {
+                //获取选中的checkbox
+                let role_id = $('input[name="role"]:checked').val();
+
+                // 如果role_id ==1 ,则是普通用户 , 直接提交表单
+                if (role_id == 1) {
+                    $("#my_form").submit();
+                } else {
+                    //如果是管理员 , 则将action 进行更改 
+                    $("#my_form").attr("action", "/adminLogin")
+                    $("#my_form").submit();
+                }
+
+            } else {
+                layer.alert("密码不能为空", {icon: 5});
+                return false;
+            }
+        } else {
+
+            layer.alert("用户名不能为空", {icon: 5});
+            return false;
+        }
+    });
+
+    // 校验表单中用户名 与 密码是否输入,  如果有值 -> 返回 true , 如果未输入 返回 false;
+    function check(val) {
+        val = val.toString().trim();
+        return !(val == '');
+    }
+</script>
+</body>
+</html>
